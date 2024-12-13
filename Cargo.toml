@@ -1,14 +1,14 @@
 [package]
-name = "prokio"
+name = "tokise"
 version = "0.1.0"
-authors = ["Kaede Hoshikawa <futursolo@icloud.com>"]
+authors = ["Kaede Hoshikawa <futursolo@icloud.com>", "Elina <imelina@elina.website>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 keywords = ["yew", "futures", "async", "io"]
 categories = ["asynchronous"]
 description = "An asynchronous runtime compatible with WebAssembly and non-WebAssembly targets."
-repository = "https://github.com/futursolo/prokio"
+repository = "https://github.com/yewstack/tokise"
 rust-version = "1.60.0"
 
 [dependencies]

@@ -1,4 +1,4 @@
-# Promise x Tokio = Prokio
+# Tokio x Promise = Tokise
 
 An asynchronous runtime compatible with WebAssembly and non-WebAssembly targets.
 
@@ -13,10 +13,10 @@ challenges that requires applying multiple feature flags throughout their applic
 
 # Implementation
 
-To alleviate these issues, Prokio implements a single-threaded runtime that executes `?Send`
+To alleviate these issues, Tokise implements a single-threaded runtime that executes `?Send`
 (`Send` or `!Send`) futures.
 
-On platforms with multi-threading support, prokio spawns multiple independent runtimes proportional
+On platforms with multi-threading support, tokise spawns multiple independent runtimes proportional
 to the CPU core number. When tasks are spawned with a runtime handle, it will randomly select a
 worker thread from the internal pool. All tasks spawned with `spawn_local` will run on the same thread
 as the thread the task was running. When the runtime runs in a WebAssembly target, all
@@ -30,7 +30,7 @@ When you have a CPU-bounded task where CPU time is significantly
 more expensive, it should be spawned with a dedicated thread (or Web Worker) and communicates
 with the application using channels.
 
-Prokio provides the following components:
+Tokise provides the following components:
 
 1. A Task Scheduler that is capable of running non-Send tasks.
 2. A Timer that is compatible with the scheduler backend.
@@ -38,7 +38,7 @@ Prokio provides the following components:
 
 # Runtime Backend
 
-Prokio runtime is implemented with different runtimes depending on the target platform and can use
+Tokise runtime is implemented with different runtimes depending on the target platform and can use
 all features (timers / IO / task synchronisation) from the selected native runtime:
 
 - `wasm-bindgen-futures` (WebAssembly targets)

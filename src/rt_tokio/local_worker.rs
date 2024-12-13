@@ -12,7 +12,7 @@ use std::marker::PhantomData;
 use std::sync::Arc;
 use std::{io, thread};
 
-static DEFAULT_WORKER_NAME: &str = "prokio-runtime-worker";
+static DEFAULT_WORKER_NAME: &str = "tokise-runtime-worker";
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -123,7 +123,7 @@ impl LocalHandle {
     }
 
     pub fn current() -> Self {
-        Self::try_current().expect("outside of prokio runtime.")
+        Self::try_current().expect("outside of tokise runtime.")
     }
 
     pub fn spawn_local<F>(&self, f: F)
