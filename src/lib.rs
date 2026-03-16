@@ -43,7 +43,6 @@
 //! - `tokio` (non-WebAssembly targets)
 
 #![cfg_attr(documenting, feature(doc_cfg))]
-#![cfg_attr(documenting, feature(doc_auto_cfg))]
 #![deny(
     missing_docs,
     missing_debug_implementations,

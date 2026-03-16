@@ -8,72 +8,41 @@ jobs:
     name: Lint Codebase
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v6
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          override: true
-          components: rustfmt, clippy
-          profile: minimal
+          components: clippy
+          targets: wasm32-unknown-unknown
 
-      - name: Setup WebAssembly Target
-        uses: actions-rs/toolchain@v1
+      - uses: Swatinem/rust-cache@v2
         with:
-          toolchain: stable
-          target: wasm32-unknown-unknown
-          profile: minimal
+          save-if: ${{ github.ref == 'refs/heads/master' }}
 
-      - name: Restore Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run Lints
-        if: github.event_name == 'push'
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
-
-      - name: Run Lints (WebAssembly)
-        if: github.event_name == 'push'
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features --target=wasm32-unknown-unknown
-
-      - name: Run Lints (PR)
-        if: github.event_name == 'pull_request'
+      - name: Run clippy
         run: cargo clippy --all-features
 
-      - name: Run Lints (PR)
-        if: github.event_name == 'pull_request'
+      - name: Run clippy (WebAssembly)
         run: cargo clippy --all-features --target=wasm32-unknown-unknown
 
   test:
     name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v6
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          override: true
-          components: rustfmt, clippy
-          profile: minimal
 
-      - name: Restore Rust Cache
-        uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/master' }}
 
-      - name: Run Tests
+      - name: Run tests
         run: cargo test --all-features
 
   publish:
@@ -84,36 +53,25 @@ jobs:
       - test
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v6
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          override: true
-          components: rustfmt, clippy
-          profile: minimal
 
-      - name: Restore Rust Cache
-        uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/master' }}
 
       - name: Run cargo publish --dry-run
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --dry-run
+        if: github.ref == 'refs/heads/master'
+        run: cargo publish --dry-run
         env:
           RUSTFLAGS: "--cfg releasing"
 
       - name: Run cargo publish
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --token ${{ secrets.CRATES_IO_TOKEN }}
+        if: startsWith(github.ref, 'refs/tags/')
+        run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
         env:
           RUSTFLAGS: "--cfg releasing"
